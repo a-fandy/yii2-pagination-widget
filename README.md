@@ -30,7 +30,7 @@ HTML
 ```html
  <div class="row">
     <?= PaginationWidget::widget([
-        'query' => $data,
+        'query' => $query,
         'listData' => function ($model) {
             return "
             <div class='col-lg-12'>
