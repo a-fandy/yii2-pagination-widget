@@ -2,7 +2,7 @@
 widget untuk pagination
 
 # USAGE
-
+PHP
 ```php
     use app\components\PaginationWidget;
 
@@ -26,6 +26,7 @@ widget untuk pagination
             ->from('table');
 ```
 
+HTML
 ```html
  <div class="row">
     <?= PaginationWidget::widget([
@@ -38,8 +39,8 @@ widget untuk pagination
         </div>";
         },
         //optional
-        'pageSize' => 5, //default 20 
-        'linkSize' => 10, //default 5
+        //'pageSize' => 5, //default 20 
+        //'linkSize' => 10, //default 5
     ]) ?>
 </div>
 ```
