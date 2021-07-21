@@ -45,3 +45,4 @@ widget untuk pagination
 ```
 
 # image
+[Screenshot](Screenshot.png)
