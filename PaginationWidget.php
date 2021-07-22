@@ -7,6 +7,8 @@ use yii\helpers\Html;
 
 use Yii;
 use yii\web\Request;
+use yii\data\ActiveDataProvider;
+use yii\helpers\Url;
 
 class PaginationWidget extends Widget
 {
@@ -17,8 +19,10 @@ class PaginationWidget extends Widget
     public $data;
 
     public $listData;
+    public $gridData;
     public $links;
     public $linkSize = 5;
+    public $search_model;
 
     public function init()
     {
@@ -33,15 +37,30 @@ class PaginationWidget extends Widget
     {
         if (!$this->error) {
             $this->paginate();
+            $renderData  = '';
             if ($this->listData != null) {
-                $renderList  = $this->renderList();
+                $this->data = $this->query->all();
+                $renderData  = $this->renderList();
             }
-            if ($this->links === null) {
-                $renderLinks  = $this->renderLink();
+            if ($this->gridData != null) {
+                $renderData  = $this->renderGrid();
             }
-            return Html::decode($renderList . $renderLinks);
+            $renderLinks  = $this->renderLink();
+            return Html::decode($renderData . $renderLinks);
         }
         return Html::encode("silahkan masukkan query");
+    }
+
+    public function renderGrid()
+    {
+        $view = '';
+        $model =  new ActiveDataProvider([
+            'query' => $this->query,
+            'pagination' => false,
+        ]);
+        $column = $this->search_model->column($this->query);
+        $view .= call_user_func($this->gridData, $model, $column);
+        return $view;
     }
 
     public function renderList()
@@ -57,26 +76,40 @@ class PaginationWidget extends Widget
     public function renderLink()
     {
         $currentPage = $this->getPage();
-        $link = "<div class='pagination'>";
+        $link = "<ul class='pagination'>";
+        $param = Yii::$app->request->queryParams;
         $mulai = 1;
-        if ($currentPage > (int)($this->linkSize / 2)) {
-            $link .= "<a href='?page=1'>&laquo;</a>";
-            $mulai =   $currentPage - ((int)($this->linkSize / 2) - 1);
+        if ($currentPage >= round($this->linkSize / 2) && $this->pageCount > $this->linkSize) {
+            $param['page'] = 1;
+            $link .= "<li><a href='" . Url::to(array_merge([''], $param)) . "'>First</a></li>";
+            $mulai =   $currentPage - (round($this->linkSize / 2) - 2);
         }
-        $middle = $this->linkSize % 2 == 0 ? $this->linkSize + 1 : $this->linkSize;
+        $middle = $this->linkSize % 2 == 0 ? $this->linkSize - 1 : $this->linkSize;
         $linkSize =  $mulai + $middle;
-        if ($linkSize >= $this->pageCount) {
+        if ($linkSize > $this->pageCount) {
             $linkSize = $this->pageCount + 1;
         }
+        if ($linkSize - $mulai < $middle) {
+            $mulai = $linkSize -  $middle;
+        }
+        if ($currentPage >= round($this->linkSize / 2) && $this->pageCount > $this->linkSize) {
+            $param['page'] = $mulai - 1;
+            $link .= "<li><a href='" . Url::to(array_merge([''], $param)) . "'>&laquo;</a></li>";
+        }
         for ($i = $mulai; $i <  $linkSize; $i++) {
-            $link .= "<a ";
+            $link .= "<li ";
             $link .= ($currentPage + 1) == $i ? "class='active'" : "";
-            $link .= "href='?page=$i'>$i</a>";
+            $param['page'] = $i;
+            $link .= " ><a href='" . Url::to(array_merge([''], $param)) . "'>$i</a></li>";
         }
-        if ($currentPage + 1 < $this->pageCount - 2) {
-            $link .= "<a href='?page=$this->pageCount'>&raquo;</a>";
+
+        if ($currentPage + 1 <= $this->pageCount - 2 && $this->pageCount >= $linkSize) {
+            $param['page'] = $linkSize;
+            $link .= "<li><a href=' " . Url::to(array_merge([''], $param)) . "'>&raquo;</a></li>";
+            $param['page'] = $this->pageCount;
+            $link .= "<li><a href=' " . Url::to(array_merge([''], $param)) . "'>Last</a></li>";
         }
-        $link .= "</div>";
+        $link .= "</ul>";
         return $link;
     }
 
@@ -87,9 +120,8 @@ class PaginationWidget extends Widget
         $offset = $this->getOffset();
         $limit = $this->getLimit();
         $this->pageCount = $this->getPageCount($count);
-        $this->data = $this->query->offset($offset)
-            ->limit($limit)
-            ->all();
+        $this->query = $this->query->offset($offset)
+            ->limit($limit);
     }
 
     public function getOffset()

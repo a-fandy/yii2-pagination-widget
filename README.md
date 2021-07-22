@@ -1,7 +1,7 @@
 # yii2-pagination-widget
 widget untuk pagination
 
-# USAGE
+# USAGE LIST
 PHP
 ```php
     use app\components\PaginationWidget;
@@ -42,6 +42,33 @@ HTML
         //'pageSize' => 5, //default 20 
         //'linkSize' => 10, //default 5
     ]) ?>
+</div>
+```
+
+# USAGE GRID
+PHP
+```php
+    use app\components\PaginationWidget;
+```
+
+HTML
+```html
+ <div class="row">
+    <?= 
+       <?= PaginationWidget::widget([
+            'query' => $query,
+            'search_model' =>  $search_model,
+            'gridData' => function ($data_provider, $column) {
+                return GridView::widget([
+                    'dataProvider' => $data_provider,
+                    'columns' => $column,
+                ]);
+            },
+            //optional
+            'pageSize' => 5, //default 20 
+            //'linkSize' => 5, //default 20 
+        ]) ?>
+    ?>
 </div>
 ```
 
