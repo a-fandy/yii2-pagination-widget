@@ -48,7 +48,7 @@ HTML
 # USAGE GRID
 PHP
 
-search model (functio column in number)
+search model (function column in number)
 ```php
      'value' => function ($data, $key, $index) use ($search_model) {
                     $currentPage = ($search_model->offset / $search_model->limit);
