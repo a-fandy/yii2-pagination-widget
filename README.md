@@ -62,6 +62,7 @@ disable pagination yii
        $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => false,
+        ]);
 ```
 
 view 
