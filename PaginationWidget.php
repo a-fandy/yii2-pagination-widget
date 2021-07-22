@@ -89,7 +89,7 @@ class PaginationWidget extends Widget
         if ($linkSize > $this->pageCount) {
             $linkSize = $this->pageCount + 1;
         }
-        if ($linkSize - $mulai < $middle) {
+        if ($linkSize - $mulai < $middle && $this->pageCount >= $middle) {
             $mulai = $linkSize -  $middle;
         }
         if ($currentPage >= round($this->linkSize / 2) && $this->pageCount > $this->linkSize) {
