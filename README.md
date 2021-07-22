@@ -47,10 +47,27 @@ HTML
 
 # USAGE GRID
 PHP
+
+search model (functio column in number)
+```php
+     'value' => function ($data, $key, $index) use ($search_model) {
+                    $currentPage = ($search_model->offset / $search_model->limit);
+                    $pageSize =  $search_model->limit;
+                    return ($index + 1) + ($currentPage *  $pageSize);
+                }
+```
+
+disable pagination yii
+```php
+       $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => false,
+```
+
+view 
 ```php
     use app\components\PaginationWidget;
 ```
-
 HTML
 ```html
  <div class="row">
